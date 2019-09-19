@@ -4,4 +4,4 @@ CC=mpicc
 all: test
 
 test: main.o mfunctions.o
-	$(CC) -o $@ $(CFLAGS) $< $(LIBS)
+	$(CC) -o $@ $(CFLAGS) $^ $(LIBS)
