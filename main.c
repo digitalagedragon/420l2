@@ -45,14 +45,14 @@ int main(int argc, char **argv)
 
     //might have rounding errors on odd cores
     //int numElem = (A1 * A2) / cores;
-    
-    int *collect = calloc(A1, sizeof(int));
-    int *collect2 = calloc(B1, sizeof(int));
+    int *collect = calloc(A1*A2, sizeof(int));
+    int *collect2 = calloc(B1*B2, sizeof(int));
     int numElem = 1;
-    MPI_Scatter(&A, numElem, MPI_INT, collect, numElem, MPI_INT, 0, world);
-    MPI_Scatter(&B, numElem, MPI_INT, collect2, numElem, MPI_INT, 0, world);
+    MPI_Scatter(&A, numElem, MPI_INT, collect, A1, MPI_INT, 0, world);
+    MPI_Scatter(&B, numElem, MPI_INT, collect2, B1, MPI_INT, 0, world);
+    
     int processIP = 0;
-    processIP = IP(collect, collect2, 1);
+    processIP = IP(collect, collect2, numElem);
     printf("%d is processIP \n", processIP);
     int *innerp = NULL;
     if (rank == 0)
