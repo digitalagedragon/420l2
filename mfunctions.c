@@ -12,7 +12,7 @@ void initMatrix(matrix *A, int r, int c)
 {
     A->rows = r;
     A->cols = c;
-    A->arr = calloc(r * c , sizeof(int));
+    A->arr = calloc(r * c, sizeof(int));
 
     int i, j;
     for (i = 0; i < r; i++)
@@ -32,4 +32,9 @@ void printMatrix(matrix *A)
         //printf("\n");
         puts("");
     }
+}
+
+int index_calc(matrix *A, int i, int j)
+{
+    return INDEX(A->rows, A->cols, i, j);
 }

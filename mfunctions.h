@@ -11,4 +11,6 @@ void initMatrix(matrix *A, int r, int c);
 
 void printMatrix(matrix *A);
 
+int index_calc(matrix *A, int i, int j);
+
 #endif
