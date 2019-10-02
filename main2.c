@@ -54,8 +54,8 @@ int main(int argc, char **argv)
 
 	int indexcol = 0;
 	int indexrow = 0;
-	int sendArows = A.rows / cores;
-	int collength = A.cols;
+	int sendArows = A1 / cores;
+	int collength = A2;
 	unsigned int sendNum = collength * sendArows;
 	//printf("%d is sendnum\n\n", sendNum);
 	int *C = malloc(sizeof(int) * (sendNum));
@@ -133,8 +133,10 @@ int main(int argc, char **argv)
 		free(F.arr);
 	}
 	free(D);
-	free(A.arr);
-	free(B.arr);
+        if(rank == 0) {
+          free(A.arr);
+          free(B.arr);
+        }
 
 	MPI_Finalize();
 	return 0;
