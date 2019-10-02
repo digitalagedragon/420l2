@@ -86,22 +86,23 @@ void gauss_mv(MPI_Comm world, int rank, int cores, struct matrix A, double *ROOT
       double *Abuf = malloc(sizeof(double) * (rpc + 1) * A.cols);
       for(n = 0; n < cores; n++) {
 	// handle the case where n does not divide A.rows
-	if(n * rpc >= A.rows) {
-	  rpc = A.rows - n * rpc;
+	int rows = rpc;
+	if((n + 1) * rpc > A.rows) {
+	  rows = A.rows - n * rpc;
 	}
 
-	MPI_Send(&rpc, 1, MPI_INT, n, 0, world);
+	MPI_Send(&rows, 1, MPI_INT, n, 0, world);
 	
-	if(rpc > 0) {
-	  memcpy(lbuf, ROOT_l_k + n * rpc, sizeof(double) * rpc);
-	  memcpy(bbuf, ROOT_b + n * rpc, sizeof(double) * rpc);
+	if(rows > 0) {
+	  memcpy(lbuf, ROOT_l_k + n * rpc, sizeof(double) * rows);
+	  memcpy(bbuf, ROOT_b + n * rpc, sizeof(double) * rows);
 	  bbuf[rpc] = ROOT_b[pivot];
-	  memcpy(Abuf, A.arr + n * rpc * A.cols, sizeof(double) * rpc * A.cols);
+	  memcpy(Abuf, A.arr + n * rpc * A.cols, sizeof(double) * rows * A.cols);
 	  memcpy(Abuf + rpc * A.cols, A.arr + pivot * A.cols, sizeof(double) * A.cols);
 
-	  MPI_Send(lbuf, rpc, MPI_DOUBLE, n, 0, world);
-	  MPI_Send(bbuf, rpc + 1, MPI_DOUBLE, n, 0, world);
-	  MPI_Send(Abuf, (rpc + 1) * A.cols, MPI_DOUBLE, n, 0, world);
+	  MPI_Send(lbuf, rows, MPI_DOUBLE, n, 0, world);
+	  MPI_Send(bbuf, rows + 1, MPI_DOUBLE, n, 0, world);
+	  MPI_Send(Abuf, (rows + 1) * A.cols, MPI_DOUBLE, n, 0, world);
 	}
       }
 
@@ -150,12 +151,13 @@ void gauss_mv(MPI_Comm world, int rank, int cores, struct matrix A, double *ROOT
       int rpc = ceil((float) A.rows / cores);
       int n;
       for(n = 0; n < cores; n++) {
-	if(n * rpc >= A.rows) {
-	  rpc = A.rows - n * rpc;
+	int rows = rpc;
+	if((n + 1) * rpc > A.rows) {
+	  rows = A.rows - n * rpc;
 	}
-	if(rpc > 0) {
-	  MPI_Recv(A.arr + n * rpc * A.cols, rpc * A.cols, MPI_DOUBLE, n, 0, world, &status);
-	  MPI_Recv(ROOT_b + n * rpc, rpc, MPI_DOUBLE, n, 0, world, &status);
+	if(rows > 0) {
+	  MPI_Recv(A.arr + n * rpc * A.cols, rows * A.cols, MPI_DOUBLE, n, 0, world, &status);
+	  MPI_Recv(ROOT_b + n * rpc, rows, MPI_DOUBLE, n, 0, world, &status);
 	}
       }
       

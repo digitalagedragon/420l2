@@ -19,8 +19,8 @@ int main(void) {
 
   // Case 1 - matrix x vector
   
-  int A_cols = 3;
-  int A_rows = 3;
+  int A_cols = 3 * 4;
+  int A_rows = 3 * 4;
 
   struct matrix A, A_orig;
   double *ROOT_b;
@@ -38,12 +38,14 @@ int main(void) {
     memcpy(A_orig.arr, A.arr, A_rows * A_cols * sizeof(double));
     
     printf("Inputs:\n");
+    printf("A:\n");
     printMatrix(&A);
     ROOT_b = calloc(A_rows, sizeof(double));
     int i;
+    printf("b:\n");
     for(i = 0; i < A_rows; i++) {
       ROOT_b[i] = rand() % 10 + 1;
-      printf("%lf ", ROOT_b[i]);
+      printf("% 10lf ", ROOT_b[i]);
     }
     printf("\n");
   }
@@ -52,10 +54,12 @@ int main(void) {
   
   if(rank == 0) {
     printf("Outputs:\n");
+    printf("A:\n");
     printMatrix(&A);
     int i;
+    printf("b:\n");
     for(i = 0; i < A_rows; i++) {
-      printf("%lf ", ROOT_b[i]);
+      printf("% 10lf ", ROOT_b[i]);
     }
     printf("\n");
     printf("Check:\n");
@@ -65,9 +69,12 @@ int main(void) {
       for(j = 0; j < A_cols; j++) {
 	r += A_orig.arr[i * A_cols + j] * ROOT_b[j];
       }
-      printf("%lf ", r);
+      printf("% 10lf ", r);
     }
     printf("\n");
+    free(A.arr);
+    free(A_orig.arr);
+    free(ROOT_b);
   }
   MPI_Finalize();
 }
